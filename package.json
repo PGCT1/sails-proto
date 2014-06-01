@@ -5,7 +5,7 @@
   "author": "PGCT1",
   "license": "MIT",
   "repository": "git://github.com/PGCT1/proto",
-  "main": "proto.js",
+  "main": "./proto.js",
   "dependencies": {
     "bcrypt":"~0.7.8"
   },
