@@ -104,7 +104,25 @@ module.exports = function(child){
 	var keys = Object.keys(child);
 
 	for(var i=0;i<keys.length;++i){
-		this[keys[i]] = child[keys[i]];
+
+		// treat attributes specially and handle them in the next loop
+
+		if(keys[i] != 'attributes'){
+			this[keys[i]] = child[keys[i]];
+		}
+
+	}
+
+	// set attributes specially, to maintain the normal sails pattern
+
+	if(keys.indexOf('attributes') != -1){
+
+		var attributes = Object.keys(child['attributes']);
+
+		for(var i=0;i<attributes.length;++i){
+			this['attributes'][attributes[i]] = child['attributes'][attributes[i]];
+		}
+
 	}
 
 };
