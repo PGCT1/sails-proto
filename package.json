@@ -5,12 +5,15 @@
   "author": "PGCT1",
   "license": "MIT",
   "repository": "git://github.com/PGCT1/proto",
-  "main": "./proto.js",
+  "main": "proto.js",
   "dependencies": {
     "bcrypt":"~0.7.8"
   },
   "devDependencies": {
     "mocha": "*",
     "should": "*"
+  },
+  "bugs":{
+    "url": "https://github.com/PGCT1/proto/issues"
   }
 }
