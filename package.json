@@ -1,14 +1,14 @@
 {
-  "name": "utopia",
+  "name": "sails-proto",
   "description": "Sails MVC Prototypes",
   "version": "0.0.1",
   "author": "PGCT1",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PGCT1/proto.git"
+    "url": "https://github.com/PGCT1/sails-proto.git"
   },
-  "main": "./proto.js",
+  "main": "./sails-proto.js",
   "dependencies": {
     "bcrypt":"~0.7.8"
   },
@@ -17,6 +17,6 @@
     "should": "*"
   },
   "bugs":{
-    "url": "https://github.com/PGCT1/proto/issues"
+    "url": "https://github.com/PGCT1/sails-proto/issues"
   }
 }
