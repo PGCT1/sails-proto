@@ -1,4 +1,4 @@
-# Proto - Object Prototypes for Sails
+# Sails Proto - Object Prototypes for Sails
 
 ## -- WARNING: UNDER HEAVY DEVELOPMENT --
 
@@ -13,7 +13,7 @@ The goal of Proto is to provide useful prototypes from which you can inherit. Fo
 User.js
 
 ```sh
-let ProtoUserModel = require('proto.js').user.model;
+let ProtoUserModel = require('sails-proto.js').user.model;
 
 module.exports = new ProtoUserModel({
 	modelExtension:function(){
@@ -27,7 +27,7 @@ UserController.js
 
 ```sh
 
-let ProtoUserController = require('proto.js').user.controller;
+let ProtoUserController = require('sails-proto.js').user.controller;
 
 module.exports = new ProtoUserController({
 	myExtension:function(req,res){
