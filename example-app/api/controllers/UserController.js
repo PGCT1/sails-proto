@@ -1,6 +1,6 @@
 'use strict';
 
-let ProtoUserController = require('proto').user.controller;
+let ProtoUserController = require('sails-proto').user.controller;
 
 module.exports = new ProtoUserController({
 	awesome:function(req,res){
