@@ -102,7 +102,7 @@ describe('User API Tests', function(){
 
 				UserController.login(
 					new SailsMock.PostRequest(UserTemplate.valid),
-					new SailsMock.ok(done)
+					new SailsMock.Ok(done)
 				);
 
 			});

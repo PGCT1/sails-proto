@@ -14,7 +14,7 @@ module.exports.PostRequest = function(params){
 
 // mock responses
 
-module.exports.ok = function(f){
+module.exports.Ok = function(f){
 	
 	this.json = function(responseJson,responseCode){
 		if(responseCode == 200 || responseCode == 201){
