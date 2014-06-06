@@ -14,40 +14,22 @@ module.exports.PostRequest = function(params){
 
 // mock responses
 
-module.exports.Ok = function(f){
+module.exports.ok = function(f){
+	
+	this.json = function(x,y){
+		if(y == 200 || y == 201){
+			f();
+		}
+	}
 
-	this.ok = function(){
-		f();
-	};
-
-	this.unauthorized = function(){
-		throw 1;
-	};
-
-	this.forbidden = function(){
-		throw 1;
-	};
-
-	this.notFound = function(){
-		throw 1;
-	};
 }
 
 module.exports.Unauthorized = function(f){
 
-	this.unauthorized = function(){
-		f();
-	};
+	this.json = function(x,y){
+		if(y == 401){
+			f();
+		}
+	}
 
-	this.ok = function(){
-		throw 1;
-	};
-
-	this.forbidden = function(){
-		throw 1;
-	};
-
-	this.notFound = function(){
-		throw 1;
-	};
 }
