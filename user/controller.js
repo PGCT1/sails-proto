@@ -13,11 +13,11 @@ module.exports = function(child){
 
 			if(err){
 				//res.unauthorized(err);
-				protoResponse.unauthorized.bind({req,res})(err);
+				protoResponse.unauthorized.bind({'req':req,'res':res})(err);
 			}else{
 				req.session.userId = userId;
 				//res.ok();
-				protoResponse.ok.bind({req,res})();
+				protoResponse.ok.bind({'req':req,'res':res})();
 			}
 
 		});
@@ -26,7 +26,7 @@ module.exports = function(child){
 
 	this.logout = function(req,res){
 		delete req.session.userId;
-		protoResponse.ok.bind({req,res})();
+		protoResponse.ok.bind({'req':req,'res':res})();
 	};
 	
 	
