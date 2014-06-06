@@ -16,8 +16,8 @@ module.exports.PostRequest = function(params){
 
 module.exports.ok = function(f){
 	
-	this.json = function(x,y){
-		if(y == 200 || y == 201){
+	this.json = function(responseJson,responseCode){
+		if(responseCode == 200 || responseCode == 201){
 			f();
 		}
 	}
@@ -26,8 +26,8 @@ module.exports.ok = function(f){
 
 module.exports.Unauthorized = function(f){
 
-	this.json = function(x,y){
-		if(y == 401){
+	this.json = function(responseJson,responseCode){
+		if(responseCode == 401){
 			f();
 		}
 	}
