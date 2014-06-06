@@ -1,5 +1,7 @@
 'use strict';
 
+var protoResponse = require('../sails-proto.js').response;
+
 module.exports = function(child){
 
 	this.login = function(req,res){
@@ -10,10 +12,12 @@ module.exports = function(child){
 		User.authorize(name,password,function(err,userId){
 
 			if(err){
-				res.unauthorized(err);
+				//res.unauthorized(err);
+				protoResponse.unauthorized.bind({req,res})(err);
 			}else{
 				req.session.userId = userId;
-				res.ok();
+				//res.ok();
+				protoResponse.ok.bind({req,res})();
 			}
 
 		});
@@ -22,8 +26,10 @@ module.exports = function(child){
 
 	this.logout = function(req,res){
 		delete req.session.userId;
+		protoResponse.ok.bind({req,res})();
 	};
-
+	
+	
 	// overrides and extensions to be applied to the prototype
 
 	var keys = Object.keys(child);
