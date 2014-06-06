@@ -1,6 +1,6 @@
 'use strict';
 
-var protoResponse = require('../sails-proto.js').response;
+var protoResponse = require('./../response/index.js');
 
 module.exports = function(child){
 
@@ -12,11 +12,9 @@ module.exports = function(child){
 		User.authorize(name,password,function(err,userId){
 
 			if(err){
-				//res.unauthorized(err);
 				protoResponse.unauthorized.bind({'req':req,'res':res})(err);
 			}else{
 				req.session.userId = userId;
-				//res.ok();
 				protoResponse.ok.bind({'req':req,'res':res})();
 			}
 
