@@ -6,10 +6,10 @@ module.exports.user = {
 };
 
 module.exports.response = {
-	"badRequest":"./response/badRequest.js",
-	"forbidden":"./response/forbidden.js",
-	"notFound":"./response/notFound.js",
-	"ok":"./response/ok.js",
-	"serverError":"./response/serverError.js",
-	"unauthorized":"./response/unauthorized.js"
+	'badRequest':require('./response/badRequest.js'),
+	'forbidden':require('./response/forbidden.js'),
+	'notFound':require('./response/notFound.js'),
+	'ok':require('./response/ok.js'),
+	'serverError':require('./response/serverError.js'),
+	'unauthorized':require('./response/unauthorized.js')
 };
