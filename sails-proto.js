@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports.user = {
-	controller:require('./user/controller.js'),
-	model:require('./user/model.js')
+	controller:require('./prototypes/user/controller.js'),
+	model:require('./prototypes/user/model.js')
 };
 
-module.exports.response = require('./response/index.js');
+module.exports.response = require('./prototypes/response/index.js');
