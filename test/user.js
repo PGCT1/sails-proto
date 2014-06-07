@@ -1,7 +1,7 @@
 'use strict';
 
 var should = require('should');
-var proto = require('../proto.js');
+var proto = require('../sails-proto.js');
 
 describe('Proto User Tests', function(){
 
