@@ -101,7 +101,7 @@ describe('User API Tests', function(){
 
 		describe('Instance with extensions',function(){
 
-			it('should say return true if .isCool is called on User',function(done){
+			it('should have child functions available',function(done){
 
 				if(User.isCool()){
 					done();

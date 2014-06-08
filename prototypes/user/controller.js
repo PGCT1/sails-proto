@@ -2,7 +2,7 @@
 
 var rootController = require('../root/controller.js');
 
-var controller = function(){
+var controller = function(config){
 
 	this.login = function(req,res){
 		
