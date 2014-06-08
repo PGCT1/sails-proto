@@ -24,7 +24,7 @@ var controller = function(){
 
 	this.logout = function(req,res){
 		delete req.session.userId;
-		this.respond.bind({'req':req,'res':res}).ok();
+		this.respond.ok.bind({'req':req,'res':res})();
 	};
 
 };
