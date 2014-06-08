@@ -5,16 +5,18 @@ var proto = require('../sails-proto.js');
 
 describe('Proto User Tests', function(){
 
-	var User = new proto.user.model({
-		attributes:{
-			attributeExtension:true
-		},
-		modelExtension:function(){
+	var UserModel = function(){
+		this.attributes.attributeExtension = true;
+		this.modelExtension = function(){
 			return true;
 		}
-	});
+	};
 
-	var UserController = new proto.user.controller({});
+	UserModel.prototype = new proto.user.model();
+
+	var User = new UserModel();
+
+	var UserController = new proto.user.controller();
 
 	describe('User model', function(){
 

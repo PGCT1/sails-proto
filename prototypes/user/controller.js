@@ -1,8 +1,8 @@
 'use strict';
 
-var protoResponse = require('./../response/index.js');
+var rootController = require('../root/controller.js');
 
-module.exports = function(child){
+var controller = function(){
 
 	this.login = function(req,res){
 		
@@ -12,28 +12,23 @@ module.exports = function(child){
 		User.authorize(name,password,function(err,userId){
 
 			if(err){
-				protoResponse.unauthorized.bind({'req':req,'res':res})(err);
+				this.respond.unauthorized.bind({'req':req,'res':res})(err);
 			}else{
 				req.session.userId = userId;
-				protoResponse.ok.bind({'req':req,'res':res})();
+				this.respond.ok.bind({'req':req,'res':res})();
 			}
 
-		});
+		}.bind(this));
 
 	};
 
 	this.logout = function(req,res){
 		delete req.session.userId;
-		protoResponse.ok.bind({'req':req,'res':res})();
+		this.respond.bind({'req':req,'res':res}).ok();
 	};
-	
-	
-	// overrides and extensions to be applied to the prototype
-
-	var keys = Object.keys(child);
-
-	for(var i=0;i<keys.length;++i){
-		this[keys[i]] = child[keys[i]];
-	}
 
 };
+
+controller.prototype = new rootController();
+
+module.exports = controller;

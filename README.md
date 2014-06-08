@@ -13,13 +13,21 @@ The goal of Proto is to provide useful prototypes from which you can inherit. Fo
 User.js
 
 ```sh
-var ProtoUserModel = require('sails-proto').user.model;
+var proto = require('sails-proto');
 
-module.exports = new ProtoUserModel({
-	modelExtension:function(){
-	    // your code
+var User = function(){
+	
+	this.attribute.attributeExtension = 'yourAttributeExtension';
+
+	this.modelExtension = function(){
+		// your code
 	}
-});
+};
+
+User.prototype = new proto.model.user();
+
+module.exports = proto.compile(User);
+
 ```
 
 
@@ -27,13 +35,17 @@ UserController.js
 
 ```sh
 
-var ProtoUserController = require('sails-proto').user.controller;
+var proto = require('sails-proto');
 
-module.exports = new ProtoUserController({
-	myExtension:function(req,res){
+var UserController = function(){
+	this.myExtension = function(req,res){
 		res.send('this is an extension to the user controller!');
 	}
-});
+}
+
+UserController.prototype = new proto.user.controller();
+
+module.exports = proto.compile(UserController);
 
 ```
 

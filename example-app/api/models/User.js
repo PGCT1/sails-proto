@@ -1,9 +1,13 @@
 'use strict';
 
-var ProtoUserModel = require('sails-proto').user.model;
+var proto = require('sails-proto');
 
-module.exports = new ProtoUserModel({
-	isCool:function(){
+var model = function(){
+	this.isCool = function(){
 		return true;
 	}
-});
+};
+
+model.prototype = new proto.user.model();
+
+module.exports = proto.compile(model);

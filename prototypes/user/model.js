@@ -1,6 +1,7 @@
 'use strict';
 
 var bcrypt = require('bcrypt');
+var root = require('../root/model.js');
 
 function setValuePasswordHash(values,next){
 
@@ -17,7 +18,7 @@ function setValuePasswordHash(values,next){
 
 }
 
-module.exports = function(child){
+var model = function(){
 
 	this.attributes = {
 
@@ -99,31 +100,7 @@ module.exports = function(child){
 
 	};
 
-	// overrides and extensions to be applied to the prototype
-
-	var keys = Object.keys(child);
-
-	for(var i=0;i<keys.length;++i){
-
-		// treat attributes specially and handle them in the next loop
-
-		if(keys[i] != 'attributes'){
-			this[keys[i]] = child[keys[i]];
-		}
-
-	}
-
-	// set attributes specially, to maintain the normal sails pattern
-
-	if(keys.indexOf('attributes') != -1){
-
-		var attributes = Object.keys(child['attributes']);
-
-		for(var i=0;i<attributes.length;++i){
-			this['attributes'][attributes[i]] = child['attributes'][attributes[i]];
-		}
-
-	}
-
 };
+
+module.exports = model;
 
