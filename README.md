@@ -6,7 +6,7 @@
 
 Certain application-level components are found in some form in nearly every application, for example, the concept of a user object. A user object has some sense of uniqueness -- an id or name, authentication, logging in, logging out, etc.
 
-The goal of Proto is to provide useful prototypes from which you can inherit. For example, our user prototype implements the concept of a unique name, a password which is hashed and stored in the database, logging in, logging out, and more.
+The goal of this project is to provide useful prototypes from which you can inherit. For example, the user prototype implements the concept of a unique name, a password which is hashed and stored in the database, logging in, logging out, and provides a way for access control for other objects.
 
 ### How it works
 
