@@ -18,7 +18,15 @@ function setValuePasswordHash(values,next){
 
 }
 
-var model = function(){
+var model = function(config){
+
+	// default name for the model is 'user', but any name can be used
+
+	var objectName = 'user';
+
+	if(config && config.model){
+		objectName = config.model;
+	}
 
 	this.attributes = {
 
@@ -73,7 +81,7 @@ var model = function(){
 
 	this.authorize = function(username,password,callback){
 		
-		User.findOne({username:username}).exec(function(err,user){
+		sails.models[objectName].findOne({username:username}).exec(function(err,user){
 
 			if(err){
 				console.log(err);

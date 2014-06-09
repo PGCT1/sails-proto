@@ -6,10 +6,10 @@ var controller = function(config){
 
 	// default name for the model is 'user', but any name can be used
 
-	var model = 'user';
+	var objectName = 'user';
 
 	if(config && config.model){
-		model = config.model;
+		objectName = config.model;
 	}
 
 	this.login = function(req,res){
@@ -17,22 +17,22 @@ var controller = function(config){
 		var username = req.param('username');
 		var password = req.param('password');
 
-		sails.models[model].authorize(username,password,function(err,userId){
+		sails.models[objectName].authorize(username,password,function(err,userId){
 
 			if(err){
-				this.respond.unauthorized.bind({'req':req,'res':res})(err);
+				sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})(err);
 			}else{
-				req.session[model+'Id'] = userId;
-				this.respond.ok.bind({'req':req,'res':res})();
+				req.session[objectName+'Id'] = userId;
+				sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
 			}
 
-		}.bind(this));
+		});
 
 	};
 
 	this.logout = function(req,res){
-		delete req.session[model+'Id'];
-		this.respond.ok.bind({'req':req,'res':res})();
+		delete req.session[objectName+'Id'];
+		sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
 	};
 
 };

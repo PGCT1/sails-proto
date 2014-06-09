@@ -8,6 +8,6 @@ var model = function(){
 	}
 };
 
-model.prototype = new proto.user.model();
+model.prototype = new proto.user.model({model:'user'});
 
 module.exports = proto.compile(model);

@@ -8,6 +8,6 @@ var controller = function(){
 	};
 };
 
-controller.prototype = new proto.user.controller();
+controller.prototype = new proto.user.controller({'model':'user'});
 
 module.exports = proto.compile(controller);
