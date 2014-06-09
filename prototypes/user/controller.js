@@ -4,6 +4,8 @@ var rootController = require('../root/controller.js');
 
 var controller = function(config){
 
+	// default name for the model is 'user', but any name can be used
+
 	var model = 'user';
 
 	if(config && config.model){
@@ -12,10 +14,10 @@ var controller = function(config){
 
 	this.login = function(req,res){
 		
-		var name = req.param('name');
+		var username = req.param('username');
 		var password = req.param('password');
 
-		sails.models[model].authorize(name,password,function(err,userId){
+		sails.models[model].authorize(username,password,function(err,userId){
 
 			if(err){
 				this.respond.unauthorized.bind({'req':req,'res':res})(err);

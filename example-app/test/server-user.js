@@ -7,11 +7,11 @@ var SailsMock = require('./SailsAssist/Mock.js');
 
 var UserTemplate = {
 	valid:{
-		name:'user',
+		username:'user',
 		password:'password'
 	},
 	invalid:{
-		name:'u$er',
+		username:'u$er',
 		password:'p'
 	}
 };
@@ -46,7 +46,7 @@ describe('User API Tests', function(){
 
 					User.create(
 						{
-							'name':UserTemplate.invalid.name,
+							'name':UserTemplate.invalid.username,
 							'password':UserTemplate.valid.password
 						},function(err){
 							(err != null).should.be.true;
@@ -59,7 +59,7 @@ describe('User API Tests', function(){
 
 					User.create(
 						{
-							'name':UserTemplate.valid.name,
+							'name':UserTemplate.valid.username,
 							'password':UserTemplate.invalid.password
 						},function(err){
 							(err != null).should.be.true;
@@ -90,7 +90,7 @@ describe('User API Tests', function(){
 
 			it('should not store passwords',function(done){
 
-				User.findOne({"name":UserTemplate.valid.name},function(e,user){
+				User.findOne({"username":UserTemplate.valid.username},function(e,user){
 					user.should.not.have.a.property('password');
 					done();
 				});
@@ -134,7 +134,7 @@ describe('User API Tests', function(){
 
 				UserController.login(
 					new SailsMock.PostRequest({
-						'name':UserTemplate.valid.name,
+						'name':UserTemplate.valid.username,
 						'password':UserTemplate.invalid.password
 					}),
 					new SailsMock.Unauthorized(done)

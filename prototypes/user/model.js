@@ -22,7 +22,7 @@ var model = function(){
 
 	this.attributes = {
 
-		name:{
+		username:{
 			type:'string',
 			required:true,
 			unique:true,
@@ -59,7 +59,7 @@ var model = function(){
 
 	this.beforeUpdate = function(values, next){
 
-		delete values.name;	//disable name changing
+		delete values.username;	//disable name changing
 
 		//if there is a password, update passwordHash
 
@@ -71,9 +71,9 @@ var model = function(){
 
 	};
 
-	this.authorize = function(name,password,callback){
+	this.authorize = function(username,password,callback){
 		
-		User.findOne({name:name}).exec(function(err,user){
+		User.findOne({username:username}).exec(function(err,user){
 
 			if(err){
 				console.log(err);
@@ -81,7 +81,7 @@ var model = function(){
 			}
 
 			if(!user){
-				return callback({"error":"User "+name+" not found."});
+				return callback({"error":"User "+username+" not found."});
 			}
 
 			bcrypt.compare(password, user.passwordHash, function(err, match){
@@ -91,7 +91,7 @@ var model = function(){
 				if(match){
 					callback(null,user.id);
 				}else{
-					callback('Incorrect password for user ' + name + '.');
+					callback('Incorrect password for user ' + username + '.');
 				}
 
 			});
