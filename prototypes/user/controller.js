@@ -18,6 +18,51 @@ var idMatch = function(objectName,req,res,next){
 
 }
 
+function basicAuth(objectName,req,res,callback){
+
+	var id = req.params.id;
+
+	function interpretBasicAuthCredentials(basicAuthString){
+
+		if(!basicAuthString){
+			throw 1;
+		}
+
+		var base64creds = basicAuthString.substring(basicAuthString.indexOf(" "));
+
+		var credString = (new Buffer(base64creds, 'base64')).toString('utf8');
+
+		if(credString.indexOf(":") == -1){
+			throw 1;
+		}
+
+		var user = credString.substring(0,credString.indexOf(":"));
+		var pass = credString.substring(credString.indexOf(":")+1);
+
+		return {
+			username:user,
+			password:pass
+		}
+
+	}
+
+	try{
+  	
+  	var credentials = interpretBasicAuthCredentials(req.headers.authorization);
+
+  	sails.models[objectName].authorize(credentials.username,credentials.password,function(err,userId){
+  		if(err || userId != id){
+				sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
+  		}else{
+  			callback();
+  		}
+  	});
+
+	}catch(e){
+		sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
+	}
+}
+
 var controller = function(config){
 
 	// default name for the model is 'user', but any name can be used
@@ -61,7 +106,7 @@ var controller = function(config){
 
 		var id = req.params.id;
 
-		idMatch(objectName,req,res,function(){
+		function updateUser(){
 
 			sails.models[objectName].update({id:id},req.body,function(err){
 
@@ -73,7 +118,17 @@ var controller = function(config){
 
 			});
 
-		});
+		}
+
+		if(req.session[objectName+'Id']){
+
+			idMatch(objectName,req,res,updateUser);
+
+		}else{
+
+			basicAuth(objectName,req,res,updateUser);
+
+		}
 
 	};
 
@@ -81,7 +136,7 @@ var controller = function(config){
 
 		var id = req.params.id;
 
-		idMatch(objectName,req,res,function(){
+		function destroyUser(){
 
 			sails.models[objectName].destroy({id:id}).exec(function(err){
 
@@ -93,8 +148,18 @@ var controller = function(config){
 				}
 
 			});
+			
+		}
 
-		});
+		if(req.session[objectName+'Id']){
+
+			idMatch(objectName,req,res,destroyUser);
+
+		}else{
+
+			basicAuth(objectName,req,res,destroyUser);
+
+		}
 			
 	};
 

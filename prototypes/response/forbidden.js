@@ -5,7 +5,7 @@ module.exports = function forbidden(err){
   var res = this.res;
 
   if(!err){
-    res.json({"error":"Invalid authorization."},403);
+    res.json({"error":"This action is not allowed."},403);
   }else if(typeof(err) == "string"){
   	res.json({"error":err},403);
   }else{
