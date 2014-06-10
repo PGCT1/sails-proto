@@ -15,7 +15,6 @@ describe('Proto User Tests', function(){
 	UserModel.prototype = new proto.user.model();
 
 	var User = new UserModel();
-
 	var UserController = new proto.user.controller();
 
 	describe('User model', function(){
@@ -25,11 +24,12 @@ describe('Proto User Tests', function(){
 		});
 
 		it('should implement attribute extensions',function(){
+			console.log(User.attributes);
 			User.attributes.attributeExtension.should.be.true;
 		});
 
 		it('should retain proto attributes which are not specifically overridden',function(){
-			(User.attributes.name === undefined).should.be.false;
+			(User.attributes.username === undefined).should.be.false;
 		});
 
 	});

@@ -35,6 +35,28 @@ var controller = function(config){
 		sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
 	};
 
+	this.destroy = function(req,res){
+
+		var id = req.params.id;
+
+		if(!id){
+			return sails.controllers[objectName].respond.badRequest.bind({'req':req,'res':res})('Missing id parameter.');
+		}
+
+		if(id == req.session[objectName+'Id']){
+			sails.models[objectName].destroy({id:id}).exec(function(err){
+				if(!err){
+					delete req.session[objectName+'Id'];
+					sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
+				}else{
+					sails.controllers[objectName].respond.serverError.bind({'req':req,'res':res})(err);
+				}
+			});
+		}else{
+			sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
+		}
+	};
+
 };
 
 controller.prototype = new rootController();
