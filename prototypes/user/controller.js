@@ -20,15 +20,19 @@ var idMatch = function(objectName,req,res,next){
 
 var controller = function(config){
 
-	rootController.apply(this,config);
-
 	// default name for the model is 'user', but any name can be used
 
 	var objectName = 'user';
 
 	if(config && config.model){
 		objectName = config.model;
+	}else if(config){
+		config.model = objectName;
+	}else{
+		config = {model:objectName};
 	}
+
+	rootController.apply(this,[config]);
 
 	this.login = function(req,res){
 		
@@ -96,7 +100,7 @@ var controller = function(config){
 
 };
 
-controller.prototype = new rootController();
+controller.prototype = rootController;
 controller.prototype.constructor = controller;
 
 module.exports = controller;

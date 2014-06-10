@@ -20,15 +20,19 @@ function setValuePasswordHash(values,next){
 
 var model = function(config){
 
-	root.apply(this,config);
-
 	// default name for the model is 'user', but any name can be used
 
 	var objectName = 'user';
 
 	if(config && config.model){
 		objectName = config.model;
+	}else if(config){
+		config.model = objectName;
+	}else{
+		config = {model:objectName};
 	}
+
+	root.apply(this,[config]);
 
 	this.attributes.username = {
 		type:'string',
@@ -108,7 +112,7 @@ var model = function(config){
 
 };
 
-model.prototype = new root();
+model.prototype = root;
 model.prototype.constructor = model;
 
 module.exports = model;
