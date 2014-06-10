@@ -9,7 +9,12 @@ module.exports = function(prototype){
 	var incomingObj = new prototype();
 
 	for(var x in incomingObj){
-		returnObj[x] = incomingObj[x];
+
+		//constructors must be removed because we're getting rid of the inheritance model
+
+		if(x!='constructor'){
+			returnObj[x] = incomingObj[x];
+		}
 	}
 
 	return returnObj;

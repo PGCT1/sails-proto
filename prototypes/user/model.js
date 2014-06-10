@@ -20,6 +20,8 @@ function setValuePasswordHash(values,next){
 
 var model = function(config){
 
+	root.apply(this,config);
+
 	// default name for the model is 'user', but any name can be used
 
 	var objectName = 'user';
@@ -28,35 +30,31 @@ var model = function(config){
 		objectName = config.model;
 	}
 
-	this.attributes = {
+	this.attributes.username = {
+		type:'string',
+		required:true,
+		unique:true,
+		minLength:3,
+		maxLength:20,
+		regex:/^[A-Z0-9]+$/i
+	};
 
-		username:{
-			type:'string',
-			required:true,
-			unique:true,
-			minLength:3,
-			maxLength:20,
-			regex:/^[A-Z0-9]+$/i
-		},
+	this.attributes.password = {
+		type:'string',
+		required:true,
+		minLength:7,
+		maxLength:20
+	};
 
-		password:{
-			type:'string',
-			required:true,
-			minLength:7,
-			maxLength:20
-		},
+	this.attributes.passwordHash = {
+		type:'string'
+	};
 
-		passwordHash:{
-			type:'string'
-		},
-
-		toJSON:function(){
-			var obj = this.toObject();
-			delete obj.password;
-			delete obj.passwordHash;
-			return obj;
-		}
-
+	this.attributes.toJSON = function(){
+		var obj = this.toObject();
+		delete obj.password;
+		delete obj.passwordHash;
+		return obj;
 	};
 
 	this.beforeCreate = function(values, next){
@@ -85,7 +83,7 @@ var model = function(config){
 
 			if(err){
 				console.log(err);
-				callback(err);
+				return callback(err);
 			}
 
 			if(!user){
@@ -109,6 +107,9 @@ var model = function(config){
 	};
 
 };
+
+model.prototype = new root();
+model.prototype.constructor = model;
 
 module.exports = model;
 

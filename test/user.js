@@ -24,7 +24,6 @@ describe('Proto User Tests', function(){
 		});
 
 		it('should implement attribute extensions',function(){
-			console.log(User.attributes);
 			User.attributes.attributeExtension.should.be.true;
 		});
 

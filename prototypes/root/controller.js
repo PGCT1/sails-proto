@@ -2,7 +2,7 @@
 
 var protoResponse = require('./../response/index.js');
 
-var root = function(){
+var root = function(config){
 	this.respond = protoResponse;
 };
 

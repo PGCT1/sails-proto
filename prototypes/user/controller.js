@@ -20,6 +20,8 @@ var idMatch = function(objectName,req,res,next){
 
 var controller = function(config){
 
+	rootController.apply(this,config);
+
 	// default name for the model is 'user', but any name can be used
 
 	var objectName = 'user';
@@ -95,5 +97,6 @@ var controller = function(config){
 };
 
 controller.prototype = new rootController();
+controller.prototype.constructor = controller;
 
 module.exports = controller;
