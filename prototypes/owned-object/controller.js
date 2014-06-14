@@ -1,6 +1,7 @@
 'use strict';
 
 var rootController = require('../root/controller.js');
+var basicAuth = require('../lib/basicAuth.js');
 
 var controller = function(config){
 
@@ -19,34 +20,65 @@ var controller = function(config){
 		throw 'sails-proto: Invalid model configuration - an owned object must have an objectName configured.';
 	}
 
-	var model = config.model;
-	var owner = 'user';
-	var publiclyVisible = true;
-	var deletable = true;
-	var updatable = true;
-
-	if(config.owner){
-		owner = config.owner;
+	if(!config.owner){
+		config.owner = 'user';
 	}
 
-	if(config.publiclyVisible){
-		publiclyVisible = config.publiclyVisible;
+	rootController.apply(this,[config]);
+
+	this.create = function(req,res){
+
+		function createObject(req,res,id){
+
+			var attributes = req.body;
+
+			attributes[config.owner + 'Id'] = id;
+
+			sails.models[config.model].create(attributes,function(err){
+
+				if(err){
+					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
+				}else{
+					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
+				}
+
+			});
+
+		}
+
+		// check for a valid session user id or basic auth credentials
+
+		if(req.session[config.owner + 'Id']){
+			createObject(req,res,req.session[config.owner + 'Id']);
+		}else{
+
+			try{
+
+				basicAuth.interpretRequestCredentials(req,function(username,password){
+
+					sails.models[config.owner].authorize(username,password,function(err,ownerId){
+
+						if(err){
+							sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})(err);
+						}else{
+							createObject(req,res,req.session[config.owner + 'Id']);
+						}
+
+					});
+
+				});
+
+			}catch(err){
+				sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
+			}
+
+		}
+
 	}
-
-	if(config.deletable !== undefined){
-		deletable = config.deletable;
-	}
-
-	if(config.updatable !== undefined){
-		updatable = config.updatable;
-	}
-
-	
-	
-
 
 }
 
-controller.prototype = new rootController();
+controller.prototype = rootController;
+controller.prototype.constructor = controller;
 
 module.exports = controller;

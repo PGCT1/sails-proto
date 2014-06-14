@@ -6,7 +6,5 @@ module.exports = function(config){
 		throw 'sails-proto: Error constructing root object - invalid configuration.';
 	}
 
-	var model = config.model;
-
 	this.attributes = {};
 }

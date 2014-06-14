@@ -16,18 +16,15 @@ var model = function(config){
 		throw 'sails-proto: Invalid model configuration - an owned object must have an objectName configured.';
 	}
 
-	var model = config.model;
-	var owner = 'user';
-	var publiclyVisible = true;
-	var deletable = true;
-	var updatable = true;
-
-	if(config.owner){
-		owner = config.owner;
+	if(!config.owner){
+		config.owner = 'user';
 	}
 
-	this.attributes[owner+'Id'] = {
-		model:owner
+	root.apply(this,[config]);
+
+	this.attributes[config.owner+'Id'] = {
+		model:config.owner,
+		required:true
 	};
 
 	
@@ -35,6 +32,7 @@ var model = function(config){
 
 }
 
-model.prototype = new root();
+model.prototype = root;
+model.prototype.constructor = model;
 
 module.exports = model;

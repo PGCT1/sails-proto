@@ -16,7 +16,7 @@ module.exports.generate = function(output,done){
     	//use memory database for testing
 
     	default:{
-    		adapter:"sails-memory"
+    		adapter:'sails-memory'
     	}
 
     }

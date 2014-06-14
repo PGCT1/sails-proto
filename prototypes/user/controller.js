@@ -22,7 +22,9 @@ function basicAuth(objectName,req,res,callback){
 
 	var id = req.params.id;
 
-	function interpretBasicAuthCredentials(basicAuthString){
+	function interpretBasicAuthCredentials(req){
+
+		var basicAuthString = req.headers.authorization;
 
 		if(!basicAuthString){
 			throw 1;
@@ -48,7 +50,7 @@ function basicAuth(objectName,req,res,callback){
 
 	try{
   	
-  	var credentials = interpretBasicAuthCredentials(req.headers.authorization);
+  	var credentials = interpretBasicAuthCredentials(req);
 
   	sails.models[objectName].authorize(credentials.username,credentials.password,function(err,userId){
   		if(err || userId != id){
