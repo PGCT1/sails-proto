@@ -1,0 +1,11 @@
+parents:
+	root
+components
+	model
+	controller
+dependents
+	User
+description
+	The OwnedObject prototype carries a reference (pointer, foreign key, whatever) to an object which should inherit from the User prototype. OwnedObjects may be configured as publicly or privately visible, but are updatable and deletable only by the owner.
+
+	As with the User object, access control is provided either through a session variable or through basic authentication with a set of user credentials.
