@@ -7,3 +7,5 @@ description
 	The User prototype is used to provide authentication to other objects on your site. The model implements the method 'authenticate', which checks credentials against those stored in a database. If a match is found, the id of the found object is passed to the callback.
 
 	The controller implements session authentication with login and logout methods.
+
+	Users may update their own profiles only, with authentication being the same as it is for other objects: either sessionor basic-auth based.
