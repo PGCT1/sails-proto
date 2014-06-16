@@ -5,9 +5,16 @@ var should = require('should');
 var SailsInstanceHelper = require('./SailsAssist/InstanceHelper.js');
 var SailsMock = require('./SailsAssist/Mock.js');
 
+var defaultUserCredentials = {
+	username:'user1',
+	password:'password1'
+};
+
+defaultUserCredentials.basicAuth = (new Buffer(defaultUserCredentials.username + ':' + defaultUserCredentials.password)).toString('base64');
+
 describe('OwnedObject API Tests', function(){
 
-	var app = {sails:null};
+	var app = {};
 	var User;
 	var userId;
 	var OwnedObject;
@@ -22,7 +29,7 @@ describe('OwnedObject API Tests', function(){
 			User = app.sails.models.user;
 			OwnedObject = app.sails.models.possession;
 
-			User.create({username:'user1',password:'password1'},function(err,user){
+			User.create(defaultUserCredentials,function(err,user){
 				userId = user.id;
 				done();
 			});
@@ -37,6 +44,8 @@ describe('OwnedObject API Tests', function(){
 
 	describe('OwnedObject controller', function(){
 
+		var createdPossessionId;
+
 		before(function(){
 			OwnedObjectController = app.sails.controllers.possession;
 		});
@@ -46,6 +55,97 @@ describe('OwnedObject API Tests', function(){
 			OwnedObjectController.create(
 				new SailsMock.PostRequest({}),
 				new SailsMock.Unauthorized(done)
+			);
+
+		});
+
+		it('should not be publicly visible',function(done){
+
+			OwnedObjectController.find(
+				new SailsMock.PostRequest({}),
+				new SailsMock.Unauthorized(done)
+			);
+
+		});
+
+		it('should not be publicly updatable',function(done){
+
+			OwnedObjectController.find(
+				new SailsMock.PutRequest({}),
+				new SailsMock.Unauthorized(done)
+			);
+
+		});
+
+		it('should be creatable by an authenticated user',function(done){
+
+			var req = new SailsMock.PostRequest({});
+
+			req.headers = {
+				'authorization':'Basic ' + defaultUserCredentials.basicAuth
+			};
+
+			OwnedObjectController.create(
+				req,
+				new SailsMock.Ok(function(err,possession){
+					createdPossessionId = possession.id;
+					done();
+				})
+			);
+
+		});
+
+		it('should be visible to its owner',function(done){
+
+			var req = new SailsMock.PostRequest({});
+
+			req.headers = {
+				'authorization':'Basic ' + defaultUserCredentials.basicAuth
+			};
+
+			OwnedObjectController.find(
+				req,
+				new SailsMock.Ok(function(err,possessions){
+
+					possessions.should.be.an.instanceOf(Array).with.lengthOf(1);
+
+					done();
+
+				})
+			);
+
+		});
+
+		it('should be updatable by its owner',function(done){
+
+			var req = new SailsMock.PutRequest({id:createdPossessionId});
+
+			req.headers = {
+				'authorization':'Basic ' + defaultUserCredentials.basicAuth
+			};
+
+			var randomInt = parseInt(Math.random());
+
+			req.body = {
+				integer:randomInt
+			}
+
+			OwnedObjectController.update(
+				req,
+				new SailsMock.Ok(function(){
+
+					OwnedObjectController.find(
+						req,
+						new SailsMock.Ok(function(err,possessions){
+
+							possessions[0].should.have.a.property('integer',randomInt);
+
+							done();
+
+						})
+					);
+
+				})
 			);
 
 		});

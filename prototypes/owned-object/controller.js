@@ -26,53 +26,90 @@ var controller = function(config){
 
 	rootController.apply(this,[config]);
 
-	this.create = function(req,res){
+	if(!config.publiclyVisible){
 
-		function createObject(req,res,id){
+		this.find = function(req,res){
 
-			var attributes = req.body;
+			extractOwnerIdFromRequest(config,req,res,function(ownerId){
 
-			attributes[config.owner + 'Id'] = id;
+				var findCriteria = {};
 
-			sails.models[config.model].create(attributes,function(err){
+				findCriteria[config.owner + 'Id'] = ownerId;
 
-				if(err){
-					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
-				}else{
-					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
-				}
+				sails.models[config.model].find(findCriteria).sort({'createdAt':'desc'}).limit(config.pageSize).exec(function(err,ownedObjects){
+
+					if(err){
+						sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
+					}else{
+						sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})(ownedObjects);
+					}
+
+				});
 
 			});
 
 		}
 
-		// check for a valid session user id or basic auth credentials
+	}
 
-		if(req.session[config.owner + 'Id']){
-			createObject(req,res,req.session[config.owner + 'Id']);
-		}else{
+	if(config.updatable === undefined || config.updatable){
 
-			try{
+		this.update = function(req,res){
 
-				basicAuth.interpretRequestCredentials(req,function(username,password){
+			var id = req.params.id;
 
-					sails.models[config.owner].authorize(username,password,function(err,ownerId){
+			if(!id){
+				return sails.controllers[config.model].respond.badRequest.bind({'req':req,'res':res})();
+			}
 
-						if(err){
-							sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})(err);
-						}else{
-							createObject(req,res,req.session[config.owner + 'Id']);
-						}
+			extractOwnerIdFromRequest(config,req,res,function(ownerId){
 
-					});
+				var updateCriteria = {};
+
+				updateCriteria[config.owner + 'Id'] = ownerId;
+				updateCriteria.id = id;
+
+				sails.models[config.model].update(updateCriteria,req.body,function(err){
+
+					if(err){
+						sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
+					}else{
+						sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
+					}
 
 				});
 
-			}catch(err){
-				sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
-			}
+			});
 
 		}
+
+	}else{
+
+		this.update = function(req,res){
+			sails.controllers[config.model].respond.forbidden.bind({'req':req,'res':res})();
+		};
+
+	}
+
+	this.create = function(req,res){
+
+		extractOwnerIdFromRequest(config,req,res,function(ownerId){
+
+			var attributes = req.body || {};
+
+			attributes[config.owner + 'Id'] = ownerId;
+
+			sails.models[config.model].create(attributes,function(err,obj){
+
+				if(err){
+					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
+				}else{
+					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})(obj);
+				}
+
+			});
+
+		});
 
 	}
 
@@ -82,3 +119,31 @@ controller.prototype = rootController;
 controller.prototype.constructor = controller;
 
 module.exports = controller;
+
+function extractOwnerIdFromRequest(config,req,res,callback){
+
+	var ownerId = req.session[config.owner + 'Id'];
+
+	if(ownerId !== undefined){
+		return callback(ownerId);
+	}else{
+
+		if(!req.headers || !req.headers.authorization){
+			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
+		}
+
+		try{
+
+			var credentials = basicAuth.interpretRequestCredentials(req);
+
+			sails.models[config.owner].authorize(credentials.username,credentials.password,function(err,ownerId){
+				callback(ownerId);
+			});
+
+		}catch(e){
+			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
+		}
+
+	}
+
+}

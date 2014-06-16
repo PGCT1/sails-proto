@@ -27,9 +27,6 @@ var model = function(config){
 		required:true
 	};
 
-	
-
-
 }
 
 model.prototype = root;

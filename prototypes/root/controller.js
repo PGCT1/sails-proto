@@ -14,6 +14,8 @@ var root = function(config){
 
 	if(config.pageSize){
 		pageSize = config.pageSize;
+	}else{
+		config.pageSize = pageSize;
 	}
 
 	this.find = function(req,res){
