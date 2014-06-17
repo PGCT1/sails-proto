@@ -1,6 +1,5 @@
 
 var should = require('should');
-var sinon = require('sinon');
 var bcrypt = require('bcrypt');
 
 var proto = require('../sails-proto.js');
