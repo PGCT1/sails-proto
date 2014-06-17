@@ -22,14 +22,14 @@ var model = function(config){
 
 	// default name for the model is 'user', but any name can be used
 
-	var objectName = 'user';
+	var defaultModel = 'user';
 
 	if(config && config.model){
-		objectName = config.model;
+		defaultModel = config.model;
 	}else if(config){
-		config.model = objectName;
+		config.model = defaultModel;
 	}else{
-		config = {model:objectName};
+		config = {model:defaultModel};
 	}
 
 	root.apply(this,[config]);
@@ -83,7 +83,7 @@ var model = function(config){
 
 	this.authorize = function(username,password,callback){
 		
-		sails.models[objectName].findOne({username:username}).exec(function(err,user){
+		sails.models[config.model].findOne({username:username}).exec(function(err,user){
 
 			if(err){
 				console.log(err);

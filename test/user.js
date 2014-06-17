@@ -7,6 +7,8 @@ var proto = require('../sails-proto.js');
 var Sails = require('./SailsMock/SailsMock.js');
 var Req = require('./ExpressMock/Req.js');
 
+var modelName = 'userz';
+
 describe('Proto User Tests', function(){
 
 	var User;
@@ -29,10 +31,15 @@ describe('Proto User Tests', function(){
 
 		};
 
-		UserModel.prototype = new proto.user.model();
+		UserModel.prototype = new proto.user.model({
+			model:modelName
+		});
 
 		User = new UserModel();
-		UserController = new proto.user.controller();
+
+		UserController = new proto.user.controller({
+			model:modelName
+		});
 
 	});
 
@@ -40,8 +47,8 @@ describe('Proto User Tests', function(){
 
 		before(function(){
 
-			GLOBAL.sails = new Sails.Framework(['user']);
-			model = sails.models['user'];
+			GLOBAL.sails = new Sails.Framework([modelName]);
+			model = sails.models[modelName];
 
 		});
 
@@ -124,10 +131,10 @@ describe('Proto User Tests', function(){
 
 		before(function(){
 
-			GLOBAL.sails = new Sails.Framework(['user']);
+			GLOBAL.sails = new Sails.Framework([modelName]);
 
-			model = sails.models['user'];
-			controller = sails.controllers['user'];
+			model = sails.models[modelName];
+			controller = sails.controllers[modelName];
 
 			model.update = function(filter,updates,callback){
 				callback(null);
@@ -192,7 +199,7 @@ describe('Proto User Tests', function(){
 				req
 			);
 
-			req.session.should.have.a.property('userId',1);
+			req.session.should.have.a.property(modelName + 'Id',1);
 
 		});
 
@@ -211,7 +218,7 @@ describe('Proto User Tests', function(){
 				req
 			);
 
-			req.session.should.not.have.a.property('userId');
+			req.session.should.not.have.a.property(modelName + 'Id');
 
 		});
 
@@ -229,10 +236,12 @@ describe('Proto User Tests', function(){
 
 			controller.respond = new Response('ok',done);
 
+			var session = {};
+
+			session[modelName + 'Id'] = 1;
+
 			UserController.update(
-				new Req({},{
-					userId:1
-				})
+				new Req({},session)
 			);
 
 		});
@@ -263,10 +272,12 @@ describe('Proto User Tests', function(){
 
 			controller.respond = new Response('ok',done);
 
+			var session = {};
+
+			session[modelName + 'Id'] = 1;
+
 			UserController.destroy(
-				new Req({},{
-					userId:1
-				})
+				new Req({},session)
 			);
 
 		});
@@ -282,7 +293,6 @@ describe('Proto User Tests', function(){
 			);
 
 		});
-
 
 	});
 
