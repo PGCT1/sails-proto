@@ -1,3 +1,4 @@
+'use strict';
 
 var should = require('should');
 var bcrypt = require('bcrypt');
@@ -128,6 +129,14 @@ describe('Proto User Tests', function(){
 			model = sails.models['user'];
 			controller = sails.controllers['user'];
 
+			model.update = function(filter,updates,callback){
+				callback(null);
+			};
+
+			model.destroy = function(filter,updates,callback){
+				callback(null);
+			};
+
 			controller.respond = {};
 
 		});
@@ -203,6 +212,74 @@ describe('Proto User Tests', function(){
 			);
 
 			req.session.should.not.have.a.property('userId');
+
+		});
+
+		it('should not allow updating without authorization',function(done){
+
+			controller.respond = new Response('unauthorized',done);
+
+			UserController.update(
+				new Req()
+			);
+
+		});
+
+		it('should allow updating with session authorization',function(done){
+
+			controller.respond = new Response('ok',done);
+
+			UserController.update(
+				new Req({},{
+					userId:1
+				})
+			);
+
+		});
+
+		it('should allow updating with basic authorization',function(done){
+
+			controller.respond = new Response('ok',done);
+
+			UserController.update(
+				new Req({},{},{
+					authorization:'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+				})
+			);
+
+		});
+
+		it('should not allow destroying without authorization',function(done){
+
+			controller.respond = new Response('unauthorized',done);
+
+			UserController.destroy(
+				new Req()
+			);
+
+		});
+
+		it('should allow destroying with session authorization',function(done){
+
+			controller.respond = new Response('ok',done);
+
+			UserController.destroy(
+				new Req({},{
+					userId:1
+				})
+			);
+
+		});
+
+		it('should allow destroying with basic authorization',function(done){
+
+			controller.respond = new Response('ok',done);
+
+			UserController.destroy(
+				new Req({},{},{
+					authorization:'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+				})
+			);
 
 		});
 
