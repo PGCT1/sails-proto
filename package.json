@@ -14,7 +14,8 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "sinon": "*"
   },
   "bugs":{
     "url": "https://github.com/PGCT1/sails-proto/issues"

@@ -1,82 +1,44 @@
 'use strict';
 
 var rootController = require('../root/controller.js');
+var basicAuth = require('../lib/basicAuth.js');
 
-var idMatch = function(objectName,req,res,next){
+function extractUserIdFromRequest(config,req,res,callback){
 
-	var id = req.params.id;
+	var ownerId = req.session[config.model + 'Id'];
 
-	if(!id){
-		return sails.controllers[objectName].respond.badRequest.bind({'req':req,'res':res})('Missing id parameter.');
-	}
-
-	if(id == req.session[objectName+'Id']){
-		next();
+	if(ownerId !== undefined){
+		return callback(ownerId);
 	}else{
-		sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
-	}
 
-}
-
-function basicAuth(objectName,req,res,callback){
-
-	var id = req.params.id;
-
-	function interpretBasicAuthCredentials(req){
-
-		var basicAuthString = req.headers.authorization;
-
-		if(!basicAuthString){
-			throw 1;
+		if(!req.headers || !req.headers.authorization){
+			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
 		}
 
-		var base64creds = basicAuthString.substring(basicAuthString.indexOf(" "));
+		try{
 
-		var credString = (new Buffer(base64creds, 'base64')).toString('utf8');
+			var credentials = basicAuth.interpretRequestCredentials(req);
 
-		if(credString.indexOf(":") == -1){
-			throw 1;
-		}
+			sails.models[config.model].authorize(credentials.username,credentials.password,function(err,ownerId){
+				callback(ownerId);
+			});
 
-		var user = credString.substring(0,credString.indexOf(":"));
-		var pass = credString.substring(credString.indexOf(":")+1);
-
-		return {
-			username:user,
-			password:pass
+		}catch(e){
+			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
 		}
 
 	}
 
-	try{
-  	
-  	var credentials = interpretBasicAuthCredentials(req);
-
-  	sails.models[objectName].authorize(credentials.username,credentials.password,function(err,userId){
-  		if(err || userId != id){
-				sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
-  		}else{
-  			callback();
-  		}
-  	});
-
-	}catch(e){
-		sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})();
-	}
 }
 
 var controller = function(config){
 
 	// default name for the model is 'user', but any name can be used
 
-	var objectName = 'user';
-
-	if(config && config.model){
-		objectName = config.model;
-	}else if(config){
-		config.model = objectName;
-	}else{
-		config = {model:objectName};
+	if(config && !config.model){
+		config.model = 'user';
+	}else if(!config){
+		config = {model:'user'};
 	}
 
 	rootController.apply(this,[config]);
@@ -86,13 +48,13 @@ var controller = function(config){
 		var username = req.param('username');
 		var password = req.param('password');
 
-		sails.models[objectName].authorize(username,password,function(err,userId){
+		sails.models[config.model].authorize(username,password,function(err,userId){
 
 			if(err){
-				sails.controllers[objectName].respond.unauthorized.bind({'req':req,'res':res})(err);
+				sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})(err);
 			}else{
-				req.session[objectName+'Id'] = userId;
-				sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
+				req.session[config.model+'Id'] = userId;
+				sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
 			}
 
 		});
@@ -100,68 +62,45 @@ var controller = function(config){
 	};
 
 	this.logout = function(req,res){
-		delete req.session[objectName+'Id'];
-		sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
+		delete req.session[config.model+'Id'];
+		sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
 	};
 
 	this.update = function(req,res){
 
-		var id = req.params.id;
+		extractUserIdFromRequest(config,req,res,function(id){
 
-		function updateUser(){
-
-			sails.models[objectName].update({id:id},req.body,function(err){
+			sails.models[config.model].update({id:id},req.body,function(err){
 
 				if(err){
-					sails.controllers[objectName].respond.serverError.bind({'req':req,'res':res})(err);
+					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
 				}else{
-					sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
+					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
 				}
 
 			});
 
-		}
-
-		if(req.session[objectName+'Id']){
-
-			idMatch(objectName,req,res,updateUser);
-
-		}else{
-
-			basicAuth(objectName,req,res,updateUser);
-
-		}
+		});
 
 	};
 
 	this.destroy = function(req,res){
 
-		var id = req.params.id;
+		extractUserIdFromRequest(config,req,res,function(id){
 
-		function destroyUser(){
+			delete req.session[config.model+'Id'];
 
-			sails.models[objectName].destroy({id:id}).exec(function(err){
+			sails.models[config.model].destroy({id:id},req.body,function(err){
 
-				if(!err){
-					delete req.session[objectName+'Id'];
-					sails.controllers[objectName].respond.ok.bind({'req':req,'res':res})();
+				if(err){
+					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
 				}else{
-					sails.controllers[objectName].respond.serverError.bind({'req':req,'res':res})(err);
+					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
 				}
 
 			});
-			
-		}
 
-		if(req.session[objectName+'Id']){
-
-			idMatch(objectName,req,res,destroyUser);
-
-		}else{
-
-			basicAuth(objectName,req,res,destroyUser);
-
-		}
+		});
 			
 	};
 

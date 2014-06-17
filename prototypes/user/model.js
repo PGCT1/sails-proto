@@ -101,7 +101,7 @@ var model = function(config){
 				if(match){
 					callback(null,user.id);
 				}else{
-					callback('Incorrect password for user ' + username + '.');
+					callback({'error':'Incorrect password for user ' + username + '.'});
 				}
 
 			});
