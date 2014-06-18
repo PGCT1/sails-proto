@@ -67,7 +67,7 @@ var model = function(config){
 
 	};
 
-	this.beforeUpdate = function(values, next){
+	this.beforeUpdate = function(values,next){
 
 		delete values.username;	// disable name changing
 
@@ -90,10 +90,10 @@ var model = function(config){
 			}
 
 			if(!user){
-				return callback({"error":"User "+username+" not found."});
+				return callback({"error":"User " + username + " not found."});
 			}
 
-			bcrypt.compare(password, user.passwordHash, function(err, match){
+			bcrypt.compare(password, user.passwordHash, function(err,match){
 
 				if(err)throw err;
 

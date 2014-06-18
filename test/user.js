@@ -8,7 +8,7 @@ var Sails = require('./SailsMock/SailsMock.js');
 var Req = require('./ExpressMock/Req.js');
 var Response = require('./ProtoMock/Response.js');
 
-var modelName = 'userz';
+var modelName = 'member';
 
 describe('Proto User Tests', function(){
 
@@ -131,7 +131,7 @@ describe('Proto User Tests', function(){
 				callback(null);
 			};
 
-			model.destroy = function(filter,updates,callback){
+			model.destroy = function(filter,callback){
 				callback(null);
 			};
 

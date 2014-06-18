@@ -45,6 +45,9 @@ var controller = function(config){
 
 			extractUserIdFromRequest(config,req,res,function(id){
 
+				if(req.body)
+					delete req.body.id;	// remove primary key from update
+
 				sails.models[config.model].update({id:id},req.body,function(err){
 
 					if(err){
@@ -69,6 +72,8 @@ var controller = function(config){
 
 	}
 
+	// destroy -- disabled by default
+
 	if(config.deletable === true){
 
 		this.destroy = function(req,res){
@@ -77,7 +82,7 @@ var controller = function(config){
 
 				delete req.session[config.model+'Id'];
 
-				sails.models[config.model].destroy({id:id},req.body,function(err){
+				sails.models[config.model].destroy({id:id},function(err){
 
 					if(err){
 						respond(config,req,res,'serverError',err);

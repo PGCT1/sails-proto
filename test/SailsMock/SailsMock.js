@@ -22,9 +22,45 @@ module.exports.Promise = function(term,delegate){
 
 	var obj = {};
 
-	obj[term] = delegate;
+	if(typeof(term) == 'string'){
 
-	return function(){
-		return obj;
-	};
+		// Promise('term',f)
+
+		obj[term] = delegate;
+
+		return function(){
+			return obj;
+		};
+
+	}else{
+
+		// Promise(['chain','of','terms'],f)
+
+		var iterator = function(){
+
+			var obj = {};
+
+			obj[term[term.length-1]] = delegate;
+
+			return obj;
+		};
+
+		for(var i=term.length-2;i>=0;--i){
+
+			iterator = function(i,f){
+
+				var obj = {};
+
+				obj[term[i]] = f;
+
+				return obj;
+
+			}.bind(void(0),i,iterator)
+
+		}
+
+		return iterator;
+
+	}
+	
 };
