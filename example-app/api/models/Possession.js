@@ -11,7 +11,7 @@ var model = function(){
 
 };
 
-model.prototype = new proto.ownedObject.model({
+model.prototype = new proto.possession.model({
 	model:'possession',
 	publiclyVisible:false
 });

@@ -190,25 +190,23 @@ function extractOwnerIdFromRequest(config,req,res,callback){
 			return respond(config,req,res,'unauthorized');
 		}
 
-		var ownerId;
-
 		try{
 
 			var credentials = basicAuth.interpretRequestCredentials(req);
 
-			sails.models[config.owner].authorize(credentials.username,credentials.password,function(err,id){
-				if(err){
-					return respond(config,req,res,'unauthorized');
-				}else{
-					ownerId = id;
-				}
-			});
-
 		}catch(e){
 			return respond(config,req,res,'unauthorized');
 		}
+		
+		sails.models[config.owner].authorize(credentials.username,credentials.password,function(err,id){
+			
+			if(err || !id){
+				respond(config,req,res,'unauthorized');
+			}else{
+				callback(id);
+			}
 
-		callback(ownerId);
+		});
 
 	}
 
