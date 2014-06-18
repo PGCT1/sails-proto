@@ -38,7 +38,8 @@ describe('Proto User Tests', function(){
 		User = new UserModel();
 
 		UserController = new proto.user.controller({
-			model:modelName
+			model:modelName,
+			deletable:true
 		});
 
 	});

@@ -2,6 +2,7 @@
 
 var rootController = require('../root/controller.js');
 var basicAuth = require('../lib/basicAuth.js');
+var respond = require('../response/shorthand.js');
 
 function extractUserIdFromRequest(config,req,res,callback){
 
@@ -12,7 +13,7 @@ function extractUserIdFromRequest(config,req,res,callback){
 	}else{
 
 		if(!req.headers || !req.headers.authorization){
-			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
+			return respond(config,req,res,'unauthorized');
 		}
 
 		try{
@@ -24,7 +25,7 @@ function extractUserIdFromRequest(config,req,res,callback){
 			});
 
 		}catch(e){
-			return sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})();
+			return respond(config,req,res,'unauthorized');
 		}
 
 	}
@@ -51,10 +52,10 @@ var controller = function(config){
 		sails.models[config.model].authorize(username,password,function(err,userId){
 
 			if(err){
-				sails.controllers[config.model].respond.unauthorized.bind({'req':req,'res':res})(err);
+				respond(config,req,res,'unauthorized',err);
 			}else{
 				req.session[config.model+'Id'] = userId;
-				sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
+				respond(config,req,res);
 			}
 
 		});
@@ -63,46 +64,70 @@ var controller = function(config){
 
 	this.logout = function(req,res){
 		delete req.session[config.model+'Id'];
-		sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
+		respond(config,req,res);
 	};
 
-	this.update = function(req,res){
+	if(config.updatable === undefined || config.updatable === true){
 
-		extractUserIdFromRequest(config,req,res,function(id){
+		this.update = function(req,res){
 
-			sails.models[config.model].update({id:id},req.body,function(err){
+			extractUserIdFromRequest(config,req,res,function(id){
 
-				if(err){
-					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
-				}else{
-					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
-				}
+				sails.models[config.model].update({id:id},req.body,function(err){
+
+					if(err){
+						respond(config,req,res,'serverError',err);
+					}else{
+						respond(config,req,res);
+					}
+
+				});
 
 			});
 
-		});
+		};
 
-	};
+	}else{
 
-	this.destroy = function(req,res){
+		this.update = function(req,res){
 
-		extractUserIdFromRequest(config,req,res,function(id){
+			respond(config,req,res,'forbidden');
 
-			delete req.session[config.model+'Id'];
+		}
 
-			sails.models[config.model].destroy({id:id},req.body,function(err){
+	}
 
-				if(err){
-					sails.controllers[config.model].respond.serverError.bind({'req':req,'res':res})(err);
-				}else{
-					sails.controllers[config.model].respond.ok.bind({'req':req,'res':res})();
-				}
+	if(config.deletable === true){
+
+		this.destroy = function(req,res){
+
+			extractUserIdFromRequest(config,req,res,function(id){
+
+				delete req.session[config.model+'Id'];
+
+				sails.models[config.model].destroy({id:id},req.body,function(err){
+
+					if(err){
+						respond(config,req,res,'serverError',err);
+					}else{
+						respond(config,req,res);
+					}
+
+				});
 
 			});
+				
+		};
 
-		});
-			
-	};
+	}else{
+
+		this.destroy = function(req,res){
+
+			respond(config,req,res,'serverError');
+
+		}
+
+	}
 
 };
 
