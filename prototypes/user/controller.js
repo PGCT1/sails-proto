@@ -4,34 +4,6 @@ var rootController = require('../root/controller.js');
 var basicAuth = require('../lib/basicAuth.js');
 var respond = require('../response/shorthand.js');
 
-function extractUserIdFromRequest(config,req,res,callback){
-
-	var ownerId = req.session[config.model + 'Id'];
-
-	if(ownerId !== undefined){
-		return callback(ownerId);
-	}else{
-
-		if(!req.headers || !req.headers.authorization){
-			return respond(config,req,res,'unauthorized');
-		}
-
-		try{
-
-			var credentials = basicAuth.interpretRequestCredentials(req);
-
-			sails.models[config.model].authorize(credentials.username,credentials.password,function(err,ownerId){
-				callback(ownerId);
-			});
-
-		}catch(e){
-			return respond(config,req,res,'unauthorized');
-		}
-
-	}
-
-}
-
 var controller = function(config){
 
 	// default name for the model is 'user', but any name can be used
@@ -123,7 +95,7 @@ var controller = function(config){
 
 		this.destroy = function(req,res){
 
-			respond(config,req,res,'serverError');
+			respond(config,req,res,'forbidden');
 
 		}
 
@@ -135,3 +107,33 @@ controller.prototype = rootController;
 controller.prototype.constructor = controller;
 
 module.exports = controller;
+
+// private methods
+
+function extractUserIdFromRequest(config,req,res,callback){
+
+	var ownerId = req.session[config.model + 'Id'];
+
+	if(ownerId !== undefined){
+		return callback(ownerId);
+	}else{
+
+		if(!req.headers || !req.headers.authorization){
+			return respond(config,req,res,'unauthorized');
+		}
+
+		try{
+
+			var credentials = basicAuth.interpretRequestCredentials(req);
+
+			sails.models[config.model].authorize(credentials.username,credentials.password,function(err,ownerId){
+				callback(ownerId);
+			});
+
+		}catch(e){
+			return respond(config,req,res,'unauthorized');
+		}
+
+	}
+
+}

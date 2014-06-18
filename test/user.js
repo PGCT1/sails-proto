@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt');
 var proto = require('../sails-proto.js');
 var Sails = require('./SailsMock/SailsMock.js');
 var Req = require('./ExpressMock/Req.js');
+var Response = require('./ProtoMock/Response.js');
 
 var modelName = 'userz';
 
@@ -118,17 +119,6 @@ describe('Proto User Tests', function(){
 	describe('Controller',function(){
 
 		var controller;
-
-		var Response = function(verb,callback){
-
-			var res = {};
-
-			res[verb] = function(){
-				callback();
-			};
-
-			return res;
-		};
 
 		before(function(){
 
@@ -292,6 +282,47 @@ describe('Proto User Tests', function(){
 					authorization:'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
 				})
 			);
+
+		});
+
+		describe('configuration',function(){
+
+			it('should implement an updatable flag',function(done){
+
+				UserController = new proto.user.controller({
+					model:modelName,
+					updatable:false
+				});
+
+				controller.respond = new Response('forbidden',done);
+
+				UserController.update(
+					new Req({},{},{
+						authorization:'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+					})
+				);
+
+			});
+
+		});
+
+		describe('configuration',function(){
+
+			it('should implement a deletable flag',function(done){
+
+				UserController = new proto.user.controller({
+					model:modelName
+				});
+
+				controller.respond = new Response('forbidden',done);
+
+				UserController.destroy(
+					new Req({},{},{
+						authorization:'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+					})
+				);
+
+			});
 
 		});
 
