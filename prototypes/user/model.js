@@ -69,9 +69,9 @@ var model = function(config){
 
 	this.beforeUpdate = function(values, next){
 
-		delete values.username;	//disable name changing
+		delete values.username;	// disable name changing
 
-		//if there is a password, update passwordHash
+		// if there is a password, update passwordHash
 
 		if(!values.password){
 			return next();
@@ -86,7 +86,6 @@ var model = function(config){
 		sails.models[config.model].findOne({username:username}).exec(function(err,user){
 
 			if(err){
-				console.log(err);
 				return callback(err);
 			}
 
